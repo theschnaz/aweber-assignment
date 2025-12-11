@@ -25,8 +25,9 @@ export async function generateAdCopy(concept: string): Promise<TextVariations> {
   try {
     const parsed = JSON.parse(text);
     // Gemini sometimes returns an array of variations - take the first one
-    const result = Array.isArray(parsed) ? parsed[0] : parsed;
-    console.log('Successfully parsed JSON response, isArray:', Array.isArray(parsed));
+    const isArray = Array.isArray(parsed);
+    const result = isArray ? parsed[0] : parsed;
+    console.log('[v2] Parsed JSON - isArray:', isArray, '- keys:', Object.keys(result));
     return result as TextVariations;
   } catch (parseError) {
     console.error('JSON parse error:', parseError);
