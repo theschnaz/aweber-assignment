@@ -45,19 +45,22 @@ export async function generateAdImage(
     throw new Error('GEMINI_API_KEY not configured');
   }
 
-  // Use Imagen 3 REST API directly (SDK doesn't support image generation config)
+  // Use Gemini 2.5 Flash Image model for image generation
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${apiKey}`,
     {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        instances: [{ prompt: imagePrompt }],
-        parameters: {
-          aspectRatio: spec.image.aspectRatio,
-          sampleCount: 1,
+        contents: [
+          {
+            parts: [{ text: imagePrompt }],
+          },
+        ],
+        generationConfig: {
+          responseModalities: ['IMAGE'],
         },
       }),
     }
@@ -65,23 +68,30 @@ export async function generateAdImage(
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`Imagen API error: ${response.status} - ${errorText}`);
+    throw new Error(`Image generation error: ${response.status} - ${errorText}`);
   }
 
   const data = await response.json();
 
-  if (!data.predictions || data.predictions.length === 0) {
+  // Find the image part in the response
+  const candidates = data.candidates;
+  if (!candidates || candidates.length === 0) {
     throw new Error('No image generated');
   }
 
-  const imageData = data.predictions[0].bytesBase64Encoded;
-  if (!imageData) {
+  const parts = candidates[0]?.content?.parts;
+  if (!parts || parts.length === 0) {
+    throw new Error('No image parts in response');
+  }
+
+  const imagePart = parts.find((part: { inlineData?: { data: string; mimeType: string } }) => part.inlineData);
+  if (!imagePart?.inlineData) {
     throw new Error('No image data in response');
   }
 
   return {
-    base64: imageData,
-    mimeType: 'image/png',
+    base64: imagePart.inlineData.data,
+    mimeType: imagePart.inlineData.mimeType || 'image/png',
   };
 }
 
