@@ -26,19 +26,25 @@ export default function AdVariationCard({ variation }: AdVariationCardProps) {
   const renderCopy = () => {
     const copy = variation.copy;
 
+    if (!copy) {
+      return <p className="text-gray-500 text-sm">Copy not available</p>;
+    }
+
     if (variation.platform === 'google_search') {
       const gsCopy = copy as {
-        headlines: string[];
-        descriptions: string[];
-        displayUrl: string;
+        headlines?: string[];
+        descriptions?: string[];
+        displayUrl?: string;
       };
+      const headlines = gsCopy.headlines || [];
+      const descriptions = gsCopy.descriptions || [];
       return (
         <div className="space-y-3">
           <div>
             <p className="text-xs font-medium text-gray-500 uppercase mb-1">
               Headlines
             </p>
-            {gsCopy.headlines.map((h, i) => (
+            {headlines.map((h, i) => (
               <p key={i} className="text-blue-600 text-sm font-medium">
                 {h}{' '}
                 <span className="text-gray-400 text-xs">({h.length}/30)</span>
@@ -49,66 +55,75 @@ export default function AdVariationCard({ variation }: AdVariationCardProps) {
             <p className="text-xs font-medium text-gray-500 uppercase mb-1">
               Descriptions
             </p>
-            {gsCopy.descriptions.map((d, i) => (
+            {descriptions.map((d, i) => (
               <p key={i} className="text-gray-700 text-sm">
                 {d}{' '}
                 <span className="text-gray-400 text-xs">({d.length}/90)</span>
               </p>
             ))}
           </div>
-          <div>
-            <p className="text-xs font-medium text-gray-500 uppercase mb-1">
-              Display URL
-            </p>
-            <p className="text-green-700 text-sm">
-              whiskerandpaws.com/{gsCopy.displayUrl}
-            </p>
-          </div>
+          {gsCopy.displayUrl && (
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase mb-1">
+                Display URL
+              </p>
+              <p className="text-green-700 text-sm">
+                whiskerandpaws.com/{gsCopy.displayUrl}
+              </p>
+            </div>
+          )}
         </div>
       );
     }
 
     if (variation.platform === 'meta') {
-      const metaCopy = copy as { primaryText: string; headline: string };
+      const metaCopy = copy as { primaryText?: string; headline?: string };
+      const primaryText = metaCopy.primaryText || '';
+      const headline = metaCopy.headline || '';
       return (
         <div className="space-y-3">
-          <div>
-            <p className="text-xs font-medium text-gray-500 uppercase mb-1">
-              Primary Text
-            </p>
-            <p className="text-gray-700 text-sm">
-              {metaCopy.primaryText}{' '}
-              <span className="text-gray-400 text-xs">
-                ({metaCopy.primaryText.length}/125)
-              </span>
-            </p>
-          </div>
-          <div>
-            <p className="text-xs font-medium text-gray-500 uppercase mb-1">
-              Headline
-            </p>
-            <p className="text-gray-900 font-semibold text-sm">
-              {metaCopy.headline}{' '}
-              <span className="text-gray-400 text-xs font-normal">
-                ({metaCopy.headline.length}/27)
-              </span>
-            </p>
-          </div>
+          {primaryText && (
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase mb-1">
+                Primary Text
+              </p>
+              <p className="text-gray-700 text-sm">
+                {primaryText}{' '}
+                <span className="text-gray-400 text-xs">
+                  ({primaryText.length}/125)
+                </span>
+              </p>
+            </div>
+          )}
+          {headline && (
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase mb-1">
+                Headline
+              </p>
+              <p className="text-gray-900 font-semibold text-sm">
+                {headline}{' '}
+                <span className="text-gray-400 text-xs font-normal">
+                  ({headline.length}/27)
+                </span>
+              </p>
+            </div>
+          )}
         </div>
       );
     }
 
     if (variation.platform === 'tiktok') {
-      const ttCopy = copy as { adText: string };
+      const ttCopy = copy as { adText?: string };
+      const adText = ttCopy.adText || '';
       return (
         <div>
           <p className="text-xs font-medium text-gray-500 uppercase mb-1">
             Ad Text
           </p>
           <p className="text-gray-700 text-sm">
-            {ttCopy.adText}{' '}
+            {adText}{' '}
             <span className="text-gray-400 text-xs">
-              ({ttCopy.adText.length}/100)
+              ({adText.length}/100)
             </span>
           </p>
         </div>
@@ -117,72 +132,87 @@ export default function AdVariationCard({ variation }: AdVariationCardProps) {
 
     if (variation.platform === 'display') {
       const dispCopy = copy as {
-        headline: string;
-        description: string;
-        cta: string;
+        headline?: string;
+        description?: string;
+        cta?: string;
       };
+      const headline = dispCopy.headline || '';
+      const description = dispCopy.description || '';
+      const cta = dispCopy.cta || '';
       return (
         <div className="space-y-3">
-          <div>
-            <p className="text-xs font-medium text-gray-500 uppercase mb-1">
-              Headline
-            </p>
-            <p className="text-gray-900 font-semibold text-sm">
-              {dispCopy.headline}{' '}
-              <span className="text-gray-400 text-xs font-normal">
-                ({dispCopy.headline.length}/30)
+          {headline && (
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase mb-1">
+                Headline
+              </p>
+              <p className="text-gray-900 font-semibold text-sm">
+                {headline}{' '}
+                <span className="text-gray-400 text-xs font-normal">
+                  ({headline.length}/30)
+                </span>
+              </p>
+            </div>
+          )}
+          {description && (
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase mb-1">
+                Description
+              </p>
+              <p className="text-gray-700 text-sm">
+                {description}{' '}
+                <span className="text-gray-400 text-xs">
+                  ({description.length}/90)
+                </span>
+              </p>
+            </div>
+          )}
+          {cta && (
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase mb-1">
+                CTA
+              </p>
+              <span className="inline-block px-3 py-1 bg-orange-500 text-white text-xs font-medium rounded">
+                {cta}
               </span>
-            </p>
-          </div>
-          <div>
-            <p className="text-xs font-medium text-gray-500 uppercase mb-1">
-              Description
-            </p>
-            <p className="text-gray-700 text-sm">
-              {dispCopy.description}{' '}
-              <span className="text-gray-400 text-xs">
-                ({dispCopy.description.length}/90)
-              </span>
-            </p>
-          </div>
-          <div>
-            <p className="text-xs font-medium text-gray-500 uppercase mb-1">
-              CTA
-            </p>
-            <span className="inline-block px-3 py-1 bg-orange-500 text-white text-xs font-medium rounded">
-              {dispCopy.cta}
-            </span>
-          </div>
+            </div>
+          )}
         </div>
       );
     }
 
     if (variation.platform === 'youtube') {
-      const ytCopy = copy as { headline: string; description: string };
+      const ytCopy = copy as { headline?: string; description?: string };
+      const headline = ytCopy.headline || '';
+      const description = ytCopy.description || '';
       return (
         <div className="space-y-3">
-          <div>
-            <p className="text-xs font-medium text-gray-500 uppercase mb-1">
-              Headline
-            </p>
-            <p className="text-gray-900 font-semibold text-sm">
-              {ytCopy.headline}{' '}
-              <span className="text-gray-400 text-xs font-normal">
-                ({ytCopy.headline.length}/40)
-              </span>
-            </p>
-          </div>
-          <div>
-            <p className="text-xs font-medium text-gray-500 uppercase mb-1">
-              Description
-            </p>
-            <p className="text-gray-700 text-sm">
-              {ytCopy.description}{' '}
-              <span className="text-gray-400 text-xs">
-                ({ytCopy.description.length}/90)
-              </span>
-            </p>
-          </div>
+          {headline && (
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase mb-1">
+                Headline
+              </p>
+              <p className="text-gray-900 font-semibold text-sm">
+                {headline}{' '}
+                <span className="text-gray-400 text-xs font-normal">
+                  ({headline.length}/40)
+                </span>
+              </p>
+            </div>
+          )}
+          {description && (
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase mb-1">
+                Description
+              </p>
+              <p className="text-gray-700 text-sm">
+                {description}{' '}
+                <span className="text-gray-400 text-xs">
+                  ({description.length}/90)
+                </span>
+              </p>
+            </div>
+          )}
         </div>
       );
     }
