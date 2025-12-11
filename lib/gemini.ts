@@ -40,40 +40,48 @@ export async function generateAdImage(
     throw new Error(`Platform ${platform} does not support images`);
   }
 
-  // Use Imagen 3 for image generation
-  const model = genAI.getGenerativeModel({
-    model: 'imagen-3.0-generate-002',
-  });
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('GEMINI_API_KEY not configured');
+  }
 
-  const result = await model.generateContent({
-    contents: [{ role: 'user', parts: [{ text: imagePrompt }] }],
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    generationConfig: {
-      responseModalities: ['IMAGE'],
-      imageSizeConfig: {
-        aspectRatio: spec.image.aspectRatio,
+  // Use Imagen 3 REST API directly (SDK doesn't support image generation config)
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    } as any,
-  });
+      body: JSON.stringify({
+        instances: [{ prompt: imagePrompt }],
+        parameters: {
+          aspectRatio: spec.image.aspectRatio,
+          sampleCount: 1,
+        },
+      }),
+    }
+  );
 
-  const response = result.response;
-  const candidate = response.candidates?.[0];
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Imagen API error: ${response.status} - ${errorText}`);
+  }
 
-  if (!candidate?.content?.parts) {
+  const data = await response.json();
+
+  if (!data.predictions || data.predictions.length === 0) {
     throw new Error('No image generated');
   }
 
-  const imagePart = candidate.content.parts.find(
-    (part: { inlineData?: { data: string; mimeType: string } }) => part.inlineData
-  );
-
-  if (!imagePart?.inlineData) {
+  const imageData = data.predictions[0].bytesBase64Encoded;
+  if (!imageData) {
     throw new Error('No image data in response');
   }
 
   return {
-    base64: imagePart.inlineData.data,
-    mimeType: imagePart.inlineData.mimeType,
+    base64: imageData,
+    mimeType: 'image/png',
   };
 }
 
