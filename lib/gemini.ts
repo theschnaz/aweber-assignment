@@ -6,6 +6,8 @@ import { PLATFORM_SPECS } from './platforms';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function generateAdCopy(concept: string): Promise<TextVariations> {
+  console.log('Starting text generation for concept:', concept);
+
   const model = genAI.getGenerativeModel({
     model: 'gemini-2.0-flash',
     generationConfig: {
@@ -14,15 +16,22 @@ export async function generateAdCopy(concept: string): Promise<TextVariations> {
   });
 
   const prompt = TEXT_GENERATION_PROMPT.replace('{concept}', concept);
+  console.log('Sending prompt to Gemini...');
+
   const result = await model.generateContent(prompt);
   const text = result.response.text();
+  console.log('Raw response from Gemini:', text.substring(0, 500));
 
   try {
-    return JSON.parse(text) as TextVariations;
-  } catch {
+    const parsed = JSON.parse(text) as TextVariations;
+    console.log('Successfully parsed JSON response');
+    return parsed;
+  } catch (parseError) {
+    console.error('JSON parse error:', parseError);
     // If JSON parsing fails, try to extract JSON from the response
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
+      console.log('Extracted JSON from response');
       return JSON.parse(jsonMatch[0]) as TextVariations;
     }
     throw new Error('Failed to parse ad copy response');

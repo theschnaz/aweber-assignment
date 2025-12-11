@@ -79,8 +79,8 @@ export const PLATFORM_SPECS: Record<string, PlatformSpec> = {
     },
     image: {
       aspectRatio: '16:9',
-      width: 1280,
-      height: 720,
+      width: 1920,
+      height: 1080,
     },
   },
 };

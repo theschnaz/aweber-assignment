@@ -27,10 +27,27 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate text and images in parallel
-    const [textVariations, images] = await Promise.all([
-      generateAdCopy(concept),
-      generateAllImages(concept),
-    ]);
+    let textVariations;
+    let images;
+
+    try {
+      [textVariations, images] = await Promise.all([
+        generateAdCopy(concept),
+        generateAllImages(concept),
+      ]);
+      console.log('Text variations generated:', JSON.stringify(textVariations, null, 2));
+    } catch (genError) {
+      console.error('Generation error:', genError);
+      // If text fails, try to at least get images
+      textVariations = {
+        google_search: { headlines: [], descriptions: [], displayUrl: '' },
+        meta: { primaryText: '', headline: '' },
+        tiktok: { adText: '' },
+        display: { headline: '', description: '', cta: '' },
+        youtube: { headline: '', description: '' },
+      };
+      images = await generateAllImages(concept);
+    }
 
     // Assemble the output
     const variations: AdVariation[] = PLATFORM_ORDER.map((platformId) => {
