@@ -23,16 +23,20 @@ export async function generateAdCopy(concept: string): Promise<TextVariations> {
   console.log('Raw response from Gemini:', text.substring(0, 500));
 
   try {
-    const parsed = JSON.parse(text) as TextVariations;
-    console.log('Successfully parsed JSON response');
-    return parsed;
+    const parsed = JSON.parse(text);
+    // Gemini sometimes returns an array of variations - take the first one
+    const result = Array.isArray(parsed) ? parsed[0] : parsed;
+    console.log('Successfully parsed JSON response, isArray:', Array.isArray(parsed));
+    return result as TextVariations;
   } catch (parseError) {
     console.error('JSON parse error:', parseError);
     // If JSON parsing fails, try to extract JSON from the response
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    const jsonMatch = text.match(/\[[\s\S]*\]|\{[\s\S]*\}/);
     if (jsonMatch) {
       console.log('Extracted JSON from response');
-      return JSON.parse(jsonMatch[0]) as TextVariations;
+      const extracted = JSON.parse(jsonMatch[0]);
+      // Handle array case here too
+      return (Array.isArray(extracted) ? extracted[0] : extracted) as TextVariations;
     }
     throw new Error('Failed to parse ad copy response');
   }

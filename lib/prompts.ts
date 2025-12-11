@@ -92,16 +92,21 @@ Color palette: Warm neutrals with pops of color from toys`,
 
 CONCEPT: ${concept}
 
+CRITICAL COMPOSITION RULES:
+- CENTER THE CAT IN THE EXACT MIDDLE OF THE FRAME
+- The cat must be FULLY VISIBLE - do not crop or cut off any part of the cat
+- Leave at least 15% safe margin on ALL edges (top, bottom, left, right)
+- The cat and box should occupy the center 70% of the image
+
 IMAGE REQUIREMENTS:
 - Dynamic, energetic composition suited for vertical/mobile viewing
-- Cute cat in an excited or playful pose
-- Colorful toys and treats scattered creatively
-- Subscription box as focal point
+- Cute cat in an excited or playful pose, FULLY IN FRAME
+- Colorful toys and treats scattered creatively around the centered cat
+- Subscription box visible near the cat
 - Bright, saturated colors that pop on mobile screens
 - Fun, youthful aesthetic
 - Cat should look surprised or delighted
 - NO TEXT OR WORDS IN THE IMAGE
-- Keep important elements in center (safe zone)
 - Photorealistic but can have slight stylization
 
 Mood: Fun, exciting, shareable
@@ -111,19 +116,24 @@ Style: Modern, eye-catching, scroll-stopping`,
 
 CONCEPT: ${concept}
 
+CRITICAL COMPOSITION RULES:
+- CENTER THE CAT IN THE MIDDLE OF THE FRAME
+- The cat must be FULLY VISIBLE - do not crop or cut off any part of the cat
+- Leave at least 15% safe margin on ALL edges
+- Subject should be clearly visible even at small display sizes
+
 IMAGE REQUIREMENTS:
-- Simple, focused composition
-- Cute cat face or cat with single toy
-- Subscription box visible
+- Simple, focused composition with cat CENTERED
+- Cute cat face or cat with single toy, FULLY IN FRAME
+- Subscription box visible near the cat
 - Clean background that allows text overlay
 - High contrast for visibility at small sizes
 - Professional product shot feel
-- Ample negative space on one side for text
 - NO TEXT OR WORDS IN THE IMAGE
 - Photorealistic
 
 Mood: Premium, trustworthy, appealing
-Note: Image will be used at small sizes, keep it simple`,
+Note: Image will be used at small sizes, keep it simple and centered`,
 
     youtube: `Create a cinematic, wide-format image for a YouTube ad about a cat subscription box.
 
