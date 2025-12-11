@@ -42,7 +42,14 @@ IMPORTANT RULES:
 - Include urgency or exclusivity where appropriate
 - Target audience: Cat owners aged 25-45
 
-Return ONLY valid JSON matching this exact structure (no markdown, no code blocks):
+CRITICAL JSON FORMATTING RULES:
+- Do NOT use quotation marks inside text values - no "quoted phrases" or words in quotes
+- Do NOT use apostrophes in contractions - write "cannot" not "can't", "do not" not "don't"
+- Do NOT use special characters that could break JSON parsing
+- Use simple, clean punctuation only (periods, commas, exclamation marks, question marks)
+- Return ONLY ONE JSON object, not an array
+
+Return ONLY valid JSON matching this exact structure (no markdown, no code blocks, no arrays):
 {
   "google_search": {
     "headlines": ["headline1", "headline2", "headline3"],
