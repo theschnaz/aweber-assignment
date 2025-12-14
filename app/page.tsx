@@ -5,11 +5,13 @@ import AdInputForm from '@/components/AdInputForm';
 import AdVariationCard from '@/components/AdVariationCard';
 import LoadingState from '@/components/LoadingState';
 import { GenerationOutput } from '@/lib/types';
+import { createCampaignZip } from '@/lib/zipUtils';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<GenerationOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const handleGenerate = async (concept: string) => {
     setIsLoading(true);
@@ -37,17 +39,26 @@ export default function Home() {
     }
   };
 
-  const handleDownloadJSON = () => {
+  const handleDownloadCampaign = async () => {
     if (!result) return;
-    const blob = new Blob([JSON.stringify(result, null, 2)], {
-      type: 'application/json',
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `ad-variations-${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+
+    setIsDownloading(true);
+    setError(null);
+
+    try {
+      const zipBlob = await createCampaignZip(result);
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `campaign-${Date.now()}.zip`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to create campaign zip:', err);
+      setError('Failed to create campaign zip. Please try again.');
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const handleReset = () => {
@@ -130,8 +141,11 @@ export default function Home() {
                 </p>
               </div>
               <button
-                onClick={handleDownloadJSON}
-                className="px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                onClick={handleDownloadCampaign}
+                disabled={isDownloading}
+                className={`px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+                  isDownloading ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
                 <svg
                   className="w-4 h-4"
@@ -146,7 +160,7 @@ export default function Home() {
                     d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
                   />
                 </svg>
-                Download JSON
+                {isDownloading ? 'Creating zip...' : 'Download Campaign'}
               </button>
             </div>
 
